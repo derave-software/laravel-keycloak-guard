@@ -38,9 +38,9 @@ class KeycloakGuard implements Guard
 
     try {
         if ($request->headers->has('Realm')) {
-            $this->decodedToken = Token::decode($this->request->bearerToken(), $this->config[$request->headers->get('Realm').'_realm_public_key']); //public key from realm.php
+                $this->decodedToken = Token::decode($this->request->bearerToken(), $this->config["realms"][$request->headers->get('Realm')]['realm_public_key']); //public key from realm.php
         }else{
-            $this->decodedToken = Token::decode($this->request->bearerToken(), $this->config['realm_public_key']); //default public key from keycloak.php
+            $this->decodedToken = Token::decode($this->request->bearerToken(), $this->config["realms"][$this->config['app_realm']]['realm_public_key']); //default public key from keycloak.php
         }
     } catch (\Exception $e) {
       throw new TokenException($e->getMessage());
