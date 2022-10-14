@@ -26,7 +26,7 @@ class KeycloakGuard implements Guard
         $this->decodedToken = null;
         $this->request = $request;
 
-        $this->authenticate();
+        $this->authenticate($request);
     }
 
     private function authenticate(Request $request)
