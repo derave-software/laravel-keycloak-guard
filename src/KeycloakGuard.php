@@ -26,18 +26,17 @@ class KeycloakGuard implements Guard
         $this->decodedToken = null;
         $this->request = $request;
 
-        $this->authenticate();
+        $this->authenticate($request);
     }
 
-    /**
-     * Decode token, validate and authenticate user
-     *
-     * @return mixed
-     */
-    private function authenticate()
+    private function authenticate(Request $request)
     {
         try {
-            $this->decodedToken = Token::decode($this->getTokenForRequest(), $this->config['realm_public_key'], $this->config['leeway']);
+            if ($request->headers->has('Realm')) {
+                $this->decodedToken = Token::decode($this->request->bearerToken(), $this->config["realms"][$request->headers->get('Realm')]['realm_public_key']); //public key from realm.php
+            }else{
+                $this->decodedToken = Token::decode($this->request->bearerToken(), $this->config["realms"][$this->config['app_realm']]['realm_public_key']); //default public key from keycloak.php
+            }
         } catch (\Exception $e) {
             throw new TokenException($e->getMessage());
         }
